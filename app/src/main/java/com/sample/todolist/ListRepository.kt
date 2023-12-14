@@ -29,6 +29,12 @@ class ListRepository private constructor(context: Context) {
         }
     }
 
+    fun updateList(list: ListItem) {
+        executor.execute {
+            listDao.updateList(list)
+        }
+    }
+
     companion object {
         private var INSTANCE: ListRepository? = null
         fun initialize(context: Context) {

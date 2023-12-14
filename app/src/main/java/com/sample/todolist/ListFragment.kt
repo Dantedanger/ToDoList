@@ -1,27 +1,23 @@
 @file:Suppress("DEPRECATION")
 
-package com.sample.criminalintent
+package com.sample.todolist
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sample.todolist.ListItem
-import com.sample.todolist.ListViewModel
-import com.sample.todolist.R
 import java.util.UUID
 
 private const val TAG = "ListFragment"
@@ -31,15 +27,17 @@ class ListFragment : Fragment() {
      * Требуемый интерфейс
      */
     interface Callbacks {
-        fun onListSelected(crimeId: UUID)
+        fun onListSelected(listId: UUID)
     }
     private var callbacks: Callbacks? = null
     private lateinit var listRecyclerView: RecyclerView
     private var adapter: ListAdapter? = ListAdapter(emptyList())
+    private lateinit var addButton: ImageButton
     private val listViewModel:
             ListViewModel by lazy {
         ViewModelProviders.of(this).get(ListViewModel::class.java)
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callbacks = context as Callbacks?
@@ -58,6 +56,7 @@ class ListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_list, container, false)
         listRecyclerView = view.findViewById(R.id.list_recycler_view) as RecyclerView
         listRecyclerView.layoutManager = LinearLayoutManager(context)
+        addButton = view.findViewById(R.id.add) as ImageButton
         listRecyclerView.adapter = adapter
         return view
     }
@@ -71,6 +70,15 @@ class ListFragment : Fragment() {
                     updateUI(list)
                 }
             })
+    }
+    override fun onStart() {
+        super.onStart()
+        addButton.setOnClickListener {
+            val list = ListItem()
+            listViewModel.addList(list)
+            callbacks?.onListSelected(list.id)
+            true
+        }
     }
     override fun onDetach() {
         super.onDetach()

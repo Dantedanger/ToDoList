@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import java.util.UUID
 import com.sample.todolist.ListItem
 
@@ -14,6 +15,8 @@ interface ListDao {
     @Query("SELECT * FROM list WHERE id=(:id)")
     fun getList(id: UUID): LiveData<ListItem?>
 
+    @Update
+    fun updateList(list: ListItem)
     @Insert
     fun addList(list: ListItem)
 

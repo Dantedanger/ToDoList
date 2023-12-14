@@ -16,4 +16,8 @@ class ListDetailViewModel(): ViewModel(){
     fun loadList(listId: UUID) {
         listIdLiveData.value = listId
     }
+
+    fun saveList(list: ListItem) {
+        listRepository.updateList(list)
+    }
 }
