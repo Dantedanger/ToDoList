@@ -8,4 +8,5 @@
     <string name="radioButton">High</string>
     <string name="radioButton_2">Medium</string>
     <string name="radioButton_3">Low</string>
+    <string name="addButton">Add</string>
 </resources>

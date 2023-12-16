@@ -53,5 +53,5 @@
         android:id="@+id/add"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Add" />
+        android:text="@string/addButton" />
 </LinearLayout>

@@ -1,7 +1,5 @@
 package com.sample.todolist
 
-import com.google.android.material.chip.Chip
-
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,24 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import java.util.Date
 import java.util.UUID
 
-private const val TAG = "Fragment"
-private const val ARG_LIST_ID = "id"
+private const val TAG = "FragmentSecond"
+private const val ARG_LIST_ID = "list_id"
 
 @Suppress("DEPRECATION")
 
-class Fragment : Fragment() {
+class FragmentSecond : Fragment() {
     private lateinit var list: ListItem
     private lateinit var titleField: EditText
-    private lateinit var priorityChip: Chip
+    //private lateinit var priorityChip: Chip
     private lateinit var addlistb: Button
 
     private val listDetailViewModel:
@@ -45,7 +41,7 @@ class Fragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_second, container, false)
         titleField = view.findViewById(R.id.list_title) as EditText
         addlistb = view.findViewById(R.id.add) as Button
         //priorityChip = view.findViewById(R.id.add) as Button
@@ -100,20 +96,17 @@ class Fragment : Fragment() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
 
     private fun updateUI() {
         titleField.setText(list.title)
     }
 
     companion object {
-        fun newInstance(listId: UUID): Fragment {
+        fun newInstance(listId: UUID): FragmentSecond {
             val args = Bundle().apply {
                 putSerializable(ARG_LIST_ID, listId)
             }
-            return Fragment().apply {
+            return FragmentSecond().apply {
                 arguments = args
             }
         }
