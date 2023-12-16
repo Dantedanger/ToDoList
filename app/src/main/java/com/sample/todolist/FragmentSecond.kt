@@ -1,6 +1,7 @@
 package com.sample.todolist
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,6 +24,10 @@ private const val ARG_LIST_ID = "list_id"
 @Suppress("DEPRECATION")
 
 class FragmentSecond : Fragment() {
+    interface Callbacks {
+        fun setToolbarTitle(title: String)
+    }
+    private var callbacks: Callbacks? = null
     private lateinit var list: ListItem
     private lateinit var titleField: EditText
     private lateinit var radioGroup: RadioGroup
@@ -34,6 +39,10 @@ class FragmentSecond : Fragment() {
     private val listDetailViewModel:
             ListDetailViewModel by lazy {
         ViewModelProviders.of(this).get(ListDetailViewModel::class.java)
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +56,7 @@ class FragmentSecond : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        callbacks?.setToolbarTitle("Add a New Task")
         val view = inflater.inflate(R.layout.fragment_second, container, false)
         titleField = view.findViewById(R.id.list_title) as EditText
         addlistb = view.findViewById(R.id.add) as Button
@@ -122,11 +132,14 @@ class FragmentSecond : Fragment() {
                     "Задача добавлена",
                     Toast.LENGTH_SHORT
                 ).show()
-                super.onStop()
+                fragmentManager?.popBackStack()
             }
         }
     }
-
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
     private fun updateUI() {
         titleField.setText(list.title)
         if (list.priority == 1)

@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import java.util.UUID
 
-class ListActivity : AppCompatActivity(), ListFragment.Callbacks {
+class ListActivity : AppCompatActivity(), ListFragment.Callbacks, FragmentSecond.Callbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
@@ -26,4 +26,8 @@ class ListActivity : AppCompatActivity(), ListFragment.Callbacks {
             .addToBackStack(null)
             .commit()
     }
+    override fun setToolbarTitle(title: String){
+        supportActionBar?.title = title
+    }
+
 }

@@ -5,13 +5,12 @@ package com.sample.todolist
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import java.util.UUID
+import kotlin.math.abs
 
 private const val TAG = "ListFragment"
 
@@ -31,6 +31,7 @@ class ListFragment : Fragment() {
      */
     interface Callbacks {
         fun onListSelected(listId: UUID)
+        fun setToolbarTitle(title: String)
     }
     private var callbacks: Callbacks? = null
     private lateinit var listRecyclerView: RecyclerView
@@ -55,6 +56,7 @@ class ListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        callbacks?.setToolbarTitle("To-Do List")
         val view =
             inflater.inflate(R.layout.fragment_list, container, false)
         listRecyclerView = view.findViewById(R.id.list_recycler_view) as RecyclerView
@@ -92,14 +94,70 @@ class ListFragment : Fragment() {
         listRecyclerView.adapter = adapter
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private inner class ListHolder(view: View)
-        : RecyclerView.ViewHolder(view), View.OnClickListener {
+        : RecyclerView.ViewHolder(view) {
         private lateinit var list: ListItem
         private val titleTextView: TextView = itemView.findViewById(R.id.title)
         private val priorityChip: Chip = itemView.findViewById(R.id.priority)
 
         init {
-            itemView.setOnClickListener(this)
+            val gestureDetector = GestureDetector(itemView.context, object : GestureDetector.OnGestureListener {
+                override fun onDown(e: MotionEvent): Boolean {
+                    return true
+                }
+
+
+                override fun onShowPress(e: MotionEvent) {
+                }
+
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    onClickedList(adapterPosition)
+                    return true
+                }
+
+                override fun onScroll(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    distanceX: Float,
+                    distanceY: Float
+                ): Boolean {
+                    return true
+                }
+
+                override fun onLongPress(e: MotionEvent) {
+                }
+
+                override fun onFling(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    velocityX: Float,
+                    velocityY: Float
+                ): Boolean {
+                    val SWIPE_THRESHOLD = 100
+                    val SWIPE_VELOCITY_THRESHOLD = 100
+
+                    val diffX = e2?.x?.minus(e1?.x ?: 0f) ?: 0f
+                    val diffY = e2?.y?.minus(e1?.y ?: 0f) ?: 0f
+
+                    if (abs(diffX) > abs(diffY) && abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            // Смахивание вправо
+                            handleSwipeRight(adapterPosition)
+                        } else {
+                            // Смахивание влево
+                            handleSwipeRight(adapterPosition)
+                        }
+                        return true
+                    }
+                    return false
+                }
+            })
+
+            itemView.setOnTouchListener { _, event ->
+                gestureDetector.onTouchEvent(event)
+                true
+            }
         }
 
         @SuppressLint("ResourceAsColor")
@@ -118,8 +176,11 @@ class ListFragment : Fragment() {
             priorityChip.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             priorityChip.text = this.list.priority.toString()
         }
-        override fun onClick(v: View) {
+        fun onClickedList(position: Int) {
             callbacks?.onListSelected(list.id)
+        }
+        fun handleSwipeRight(position: Int) {
+            listViewModel.deleteList(list.id)
         }
 
     }

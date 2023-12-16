@@ -34,6 +34,11 @@ class ListRepository private constructor(context: Context) {
             listDao.updateList(list)
         }
     }
+    fun deleteList(id: UUID) {
+        executor.execute {
+            listDao.deleteList(id)
+        }
+    }
 
     companion object {
         private var INSTANCE: ListRepository? = null

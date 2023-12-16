@@ -2,6 +2,7 @@ package com.sample.todolist.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -19,5 +20,6 @@ interface ListDao {
     fun updateList(list: ListItem)
     @Insert
     fun addList(list: ListItem)
-
+    @Query("DELETE FROM list WHERE id=(:id)")
+    fun deleteList(id: UUID)
 }
