@@ -10,7 +10,7 @@ import com.sample.todolist.ListItem
 
 @Dao
 interface ListDao {
-    @Query("SELECT * FROM list")
+    @Query("SELECT * FROM list ORDER BY priority")
     fun getLists(): LiveData<List<ListItem>>
     @Query("SELECT * FROM list WHERE id=(:id)")
     fun getList(id: UUID): LiveData<ListItem?>

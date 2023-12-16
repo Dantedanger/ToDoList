@@ -1,5 +1,6 @@
 package com.sample.todolist
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -22,7 +25,10 @@ private const val ARG_LIST_ID = "list_id"
 class FragmentSecond : Fragment() {
     private lateinit var list: ListItem
     private lateinit var titleField: EditText
-    //private lateinit var priorityChip: Chip
+    private lateinit var radioGroup: RadioGroup
+    private lateinit var radioButton: RadioButton
+    private lateinit var radioButton2: RadioButton
+    private lateinit var radioButton3: RadioButton
     private lateinit var addlistb: Button
 
     private val listDetailViewModel:
@@ -44,7 +50,10 @@ class FragmentSecond : Fragment() {
         val view = inflater.inflate(R.layout.fragment_second, container, false)
         titleField = view.findViewById(R.id.list_title) as EditText
         addlistb = view.findViewById(R.id.add) as Button
-        //priorityChip = view.findViewById(R.id.add) as Button
+        radioGroup = view.findViewById(R.id.radio_group) as RadioGroup
+        radioButton = view.findViewById(R.id.radioButton) as RadioButton
+        radioButton2 = view.findViewById(R.id.radioButton2) as RadioButton
+        radioButton3 = view.findViewById(R.id.radioButton3) as RadioButton
         return view
     }
 
@@ -86,19 +95,46 @@ class FragmentSecond : Fragment() {
             }
         }
         titleField.addTextChangedListener(titleWatcher)
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.radioButton -> {
+                    list.priority = 1
+                }
+                R.id.radioButton2 -> {
+                    list.priority = 2
+                }
+                R.id.radioButton3 -> {
+                    list.priority = 3
+                }
+            }
+        }
         addlistb.setOnClickListener {
-            listDetailViewModel.saveList(list)
-            Toast.makeText(
-                context,
-                "Задача добавлена",
-                Toast.LENGTH_SHORT
-            ).show()
+            if (!(radioButton.isChecked or radioButton2.isChecked or radioButton3.isChecked)){
+                Toast.makeText(
+                    context,
+                    "Не выбран приоритет",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                listDetailViewModel.saveList(list)
+                Toast.makeText(
+                    context,
+                    "Задача добавлена",
+                    Toast.LENGTH_SHORT
+                ).show()
+                super.onStop()
+            }
         }
     }
 
-
     private fun updateUI() {
         titleField.setText(list.title)
+        if (list.priority == 1)
+            radioButton.isChecked = true
+        if (list.priority == 2)
+            radioButton2.isChecked = true
+        if (list.priority == 3)
+            radioButton3.isChecked = true
     }
 
     companion object {

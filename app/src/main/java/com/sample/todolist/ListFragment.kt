@@ -2,6 +2,7 @@
 
 package com.sample.todolist
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -13,11 +14,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import java.util.UUID
 
 private const val TAG = "ListFragment"
@@ -77,7 +80,6 @@ class ListFragment : Fragment() {
             val list = ListItem()
             listViewModel.addList(list)
             callbacks?.onListSelected(list.id)
-            true
         }
     }
     override fun onDetach() {
@@ -85,8 +87,8 @@ class ListFragment : Fragment() {
         callbacks = null
     }
 
-    private fun updateUI(crimes: List<ListItem>) {
-        adapter = ListAdapter(crimes)
+    private fun updateUI(lists: List<ListItem>) {
+        adapter = ListAdapter(lists)
         listRecyclerView.adapter = adapter
     }
 
@@ -94,16 +96,27 @@ class ListFragment : Fragment() {
         : RecyclerView.ViewHolder(view), View.OnClickListener {
         private lateinit var list: ListItem
         private val titleTextView: TextView = itemView.findViewById(R.id.title)
-        private val priorityTextView: TextView = itemView.findViewById(R.id.priority)
+        private val priorityChip: Chip = itemView.findViewById(R.id.priority)
 
         init {
             itemView.setOnClickListener(this)
         }
 
+        @SuppressLint("ResourceAsColor")
         fun bind(list: ListItem) {
             this.list = list
             titleTextView.text = this.list.title
-            priorityTextView.text = this.list.priority
+            if (this.list.priority==1){
+                priorityChip.setChipBackgroundColorResource(R.color.red)
+            }
+            if (this.list.priority==2){
+                priorityChip.setChipBackgroundColorResource(R.color.orange)
+            }
+            if (this.list.priority==3){
+                priorityChip.setChipBackgroundColorResource(R.color.yellow)
+            }
+            priorityChip.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            priorityChip.text = this.list.priority.toString()
         }
         override fun onClick(v: View) {
             callbacks?.onListSelected(list.id)
